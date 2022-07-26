@@ -32,6 +32,8 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&user)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
 	}
 
 	validate := validator.New()
@@ -39,6 +41,8 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Request validation error: ", err)
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+
+		return
 	}
 
 	existingUser, err := h.userRepository.SelectUserByUserName(user.UserName)
@@ -64,6 +68,7 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
 		return
 	}
 
@@ -73,6 +78,7 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *GistHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+
 		return
 	}
 
@@ -80,6 +86,7 @@ func (h *GistHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
 		return
 	}
 
@@ -87,6 +94,7 @@ func (h *GistHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
 		return
 	}
 
@@ -97,6 +105,7 @@ func (h *GistHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "DELETE" {
 		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+
 		return
 	}
 
@@ -106,6 +115,8 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
 	}
 
 	validate := validator.New()
@@ -113,15 +124,21 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Request validation error: ", err)
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+
+		return
 	}
 
 	if request.UserName == "" {
 		http.Error(w, http.StatusText(204), http.StatusNoContent)
+
+		return
 	}
 
 	existingUser, err := h.userRepository.SelectUserByUserName(request.UserName)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
 	}
 
 	if existingUser == nil {
