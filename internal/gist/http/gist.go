@@ -75,7 +75,13 @@ func (h *GistHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response, err := json.Marshal(users)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+		return
+	}
 
+	//nolint
 	w.Write(response)
 }
 
