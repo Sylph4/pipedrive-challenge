@@ -3,11 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	internalHttp "github.com/sylph4/pipedrive-challenge/internal/gist/http"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/repository"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/service"
@@ -20,6 +23,12 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
+	driver, err := postgres.WithInstance(dbConn, &postgres.Config{})
+	m, err := migrate.NewWithDatabaseInstance(
+		"file:///migrations",
+		"postgres", driver)
+	m.Up()
 
 	gistRepository := repository.NewGistRepository(dbConn)
 	userRepository := repository.NewUserRepository(dbConn)
