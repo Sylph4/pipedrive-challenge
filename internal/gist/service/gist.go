@@ -72,7 +72,8 @@ func (s *GistService) RunGistCheck() {
 
 		for n := 0; n < len(responseGists); n++ {
 			if gist != nil && gist.CreatedAt.Before(*responseGists[n].CreatedAt) && !responseGists[n].CreatedAt.Equal(gist.CreatedAt) {
-				if createActivity(ctx, responseGists[n], users[i], pipedriveClient); err != nil {
+				createActivity(ctx, responseGists[n], users[i], pipedriveClient)
+				if err != nil {
 					fmt.Println("Could not create a gist: ", err)
 
 					break
