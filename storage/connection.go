@@ -7,6 +7,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -36,6 +37,16 @@ func Connect() (*sql.DB, error) {
 	}
 
 	configureConnectionPool(dbPool)
+
+	m, err := migrate.New(
+		"file://migrations",
+		dbURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := m.Up(); err != nil {
+		log.Fatal(err)
+	}
 
 	return dbPool, nil
 }
