@@ -4,5 +4,5 @@ type User struct {
 	UserName        string
 	GithubAPIKey    string
 	PipedriveAPIKey string
-	PipedriveUserID uint
+	PipedriveUserID string
 }

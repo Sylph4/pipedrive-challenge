@@ -129,7 +129,7 @@ type CreateUserRequest struct {
 	UserName        string `json:"userName"`
 	GithubAPIKey    string `json:"githubAPIKey"`
 	PipedriveAPIKey string `json:"pipedriveAPIKey"`
-	PipedriveUserID uint   `json:"pipedriveUserID"`
+	PipedriveUserID string `json:"pipedriveUserID"`
 }
 
 type DeleteUserNameRequest struct {
