@@ -10,11 +10,12 @@ before_install:
   - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
 
 script:
-  - golangci-lint run
+  - make lint
   - docker build -t sylph4/pipedrive-challenge .
 
 deploy:
-  provider: script
-  script: bash .docker_push
-  on:
-    branch: master
+  provider: gcs
+  access_key_id: "GCS Interoperable Access Key ID"
+  secret_access_key: "GCS Interoperable Access Secret"
+  bucket: "GCS Bucket"
+  skip_cleanup: true
