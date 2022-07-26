@@ -12,9 +12,3 @@ before_install:
 script:
   - golangci-lint run
   - docker build -t sylph4/pipedrive-challenge .
-
-deploy:
-  provider: script
-  script: bash .docker_push
-  on:
-    branch: master
