@@ -1,10 +1,20 @@
 language: go
 
+service:
+  - docker
+
 go:
   - 1.x
 
 before_install:
-  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.47.2
+  - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.42.7
 
 script:
-  - golangci-lint run
+  - make lint test
+  - docker build -t sylph4/pipedrive-challenge .
+
+deploy:
+  provider: script
+  script: bash .docker_push
+  on:
+    branch: master
