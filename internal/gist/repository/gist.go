@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-
 	"github.com/google/go-github/github"
 	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 )
@@ -11,6 +10,8 @@ import (
 type IGistRepository interface {
 	SelectLastGistByUserName(userName string) (*postgres.Gist, error)
 	InsertGist(gist *github.Gist) error
+	SelectNewGistsByUserName(userName string) ([]*postgres.Gist, error)
+	MarkGistsAsChecked(userName string) error
 }
 
 type GistRepository struct {
@@ -45,6 +46,40 @@ func (gr *GistRepository) InsertGist(gist *github.Gist) error {
 	}
 
 	fmt.Println("New gist since last check added: ", gist)
+
+	return nil
+}
+
+func (gr *GistRepository) SelectNewGistsByUserName(userName string) ([]*postgres.Gist, error) {
+	rows, err := gr.conn.Query(
+		"SELECT * FROM gists WHERE user_name=$1 AND is_checked IS FALSE ORDER BY created_at DESC", userName)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+
+	gists := make([]*postgres.Gist, 0)
+
+	for rows.Next() {
+		gist := &postgres.Gist{}
+		err := rows.Scan(&gist.ID, &gist.UserName, &gist.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		gists = append(gists, gist)
+	}
+
+	return gists, nil
+}
+
+func (gr *GistRepository) MarkGistsAsChecked(userName string) error {
+	_, err := gr.conn.Exec(
+		"UPDATE Gists SET is_checked=TRUE WHERE user_name=$1", userName)
+
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

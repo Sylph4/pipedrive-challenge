@@ -24,12 +24,13 @@ func main() {
 	gistRepository := repository.NewGistRepository(dbConn)
 	userRepository := repository.NewUserRepository(dbConn)
 	gistService := service.NewGistService(gistRepository, userRepository)
-	gistHandler := internalHttp.NewGistHandler(gistService, userRepository)
+	gistHandler := internalHttp.NewGistHandler(gistService, userRepository, gistRepository)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/create-user", gistHandler.CreateUser)
 	mux.HandleFunc("/delete-user", gistHandler.DeleteUser)
 	mux.HandleFunc("/users", gistHandler.GetUsers)
+	mux.HandleFunc("/new-gists", gistHandler.GetNewUserGists)
 
 	server := &http.Server{
 		Addr:         ":8080",

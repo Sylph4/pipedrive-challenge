@@ -3,22 +3,28 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-playground/validator/v10"
-	"github.com/sylph4/pipedrive-challenge/internal/gist/model"
-	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
+	"github.com/sylph4/pipedrive-challenge/internal/gist/model"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/repository"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/service"
+	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 )
 
 type GistHandler struct {
 	gistService    service.IGistService
 	userRepository repository.IUserRepository
+	gistRepository repository.IGistRepository
 }
 
-func NewGistHandler(gistService service.IGistService, userRepository *repository.UserRepository) *GistHandler {
-	return &GistHandler{gistService: gistService, userRepository: userRepository}
+func NewGistHandler(gistService service.IGistService, userRepository *repository.UserRepository,
+	gistRepository *repository.GistRepository) *GistHandler {
+	return &GistHandler{
+		gistService:    gistService,
+		userRepository: userRepository,
+		gistRepository: gistRepository,
+	}
 }
 
 func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -156,4 +162,47 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.StatusText(201)
+}
+
+func (h *GistHandler) GetNewUserGists(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+
+		return
+	}
+
+	username := r.URL.Query().Get("username")
+	if username != "" {
+		fmt.Println("Request validation error: username param required")
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
+
+		return
+	}
+
+	gists, err := h.gistRepository.SelectNewGistsByUserName(username)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
+	}
+
+	err = h.gistRepository.MarkGistsAsChecked(username)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
+	}
+
+	response, err := json.Marshal(gists)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+
+		return
+	}
+
+	//nolint
+	w.Write(response)
 }
