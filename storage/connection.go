@@ -39,7 +39,7 @@ func Connect() (*sql.DB, error) {
 	configureConnectionPool(dbPool)
 
 	m, err := migrate.New(
-		"file://migrations",
+		"file://pipedrive-challenge/migrations",
 		dbURI)
 	if err != nil {
 		log.Fatal(err)
