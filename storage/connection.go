@@ -18,10 +18,7 @@ func Connect() (*sql.DB, error) {
 		}
 		return v
 	}
-	// Note: Saving credentials in environment variables is convenient, but not
-	// secure - consider a more secure solution such as
-	// Cloud Secret Manager (https://cloud.google.com/secret-manager) to help
-	// keep secrets safe.
+
 	var (
 		dbUser         = mustGetenv("DB_USER")              // e.g. 'my-db-user'
 		dbPwd          = mustGetenv("DB_PASS")              // e.g. 'my-db-password'
@@ -44,24 +41,9 @@ func Connect() (*sql.DB, error) {
 }
 
 func configureConnectionPool(db *sql.DB) {
-	// [START cloud_sql_postgres_databasesql_limit]
-	// Set maximum number of connections in idle connection pool.
 	db.SetMaxIdleConns(5)
 
-	// Set maximum number of open connections to the database.
 	db.SetMaxOpenConns(7)
-	// [END cloud_sql_postgres_databasesql_limit]
 
-	// [START cloud_sql_postgres_databasesql_lifetime]
-	// Set Maximum time (in seconds) that a connection can remain open.
 	db.SetConnMaxLifetime(1800 * time.Second)
-	// [END cloud_sql_postgres_databasesql_lifetime]
-
-	// [START cloud_sql_postgres_databasesql_backoff]
-	// database/sql does not support specifying backoff
-	// [END cloud_sql_postgres_databasesql_backoff]
-	// [START cloud_sql_postgres_databasesql_timeout]
-	// The database/sql package currently doesn't offer any functionality to
-	// configure connection timeout.
-	// [END cloud_sql_postgres_databasesql_timeout]
 }
