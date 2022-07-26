@@ -1,9 +1,9 @@
 FROM golang:alpine as builder
-RUN apk --no-cache add build-base git bzr mercurial gcc make
 ADD . /src
-RUN cd /src && make test build
+WORKDIR /src
+RUN go build -o pipedrive-challenge cmd/server/main.go
 
 FROM alpine
 WORKDIR /app
-COPY --from=builder /src/github.com/sylph4/pipedrive-challenge /app/
-ENTRYPOINT ./pipedrive-challenge
+COPY --from=builder /src/pipedrive-challenge /app/
+ENTRYPOINT /app/pipedrive-challenge
