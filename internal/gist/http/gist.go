@@ -3,6 +3,8 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/go-playground/validator/v10"
+	"github.com/sylph4/pipedrive-challenge/internal/gist/model"
 	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 	"net/http"
 
@@ -26,10 +28,17 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	decoder := json.NewDecoder(r.Body)
 
-	user := &CreateUserRequest{}
+	user := &model.CreateUserRequest{}
 	err := decoder.Decode(&user)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+	}
+
+	validate := validator.New()
+	err = validate.Struct(user)
+	if err != nil {
+		fmt.Println("Request validation error: ", err)
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 	}
 
 	existingUser, err := h.userRepository.SelectUserByUserName(user.UserName)
@@ -93,10 +102,17 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 
-	request := &DeleteUserNameRequest{}
+	request := &model.DeleteUserNameRequest{}
 	err := decoder.Decode(&request)
 	if err != nil {
 		http.Error(w, http.StatusText(500), http.StatusInternalServerError)
+	}
+
+	validate := validator.New()
+	err = validate.Struct(request)
+	if err != nil {
+		fmt.Println("Request validation error: ", err)
+		http.Error(w, http.StatusText(400), http.StatusBadRequest)
 	}
 
 	if request.UserName == "" {
@@ -123,15 +139,4 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.StatusText(201)
-}
-
-type CreateUserRequest struct {
-	UserName        string `json:"userName"`
-	GithubAPIKey    string `json:"githubAPIKey"`
-	PipedriveAPIKey string `json:"pipedriveAPIKey"`
-	PipedriveUserID uint   `json:"pipedriveUserID"`
-}
-
-type DeleteUserNameRequest struct {
-	UserName string `json:"userName"`
 }

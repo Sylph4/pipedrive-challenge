@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 	"golang.org/x/oauth2"
 	"time"
 
 	"github.com/genert/pipedrive-api/pipedrive"
 	"github.com/google/go-github/github"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/repository"
+	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 )
 
 type IGistService interface {
@@ -24,7 +24,7 @@ type GistService struct {
 func NewGistService(gistRepository repository.IGistRepository, userRepository *repository.UserRepository) *GistService {
 	gistService := &GistService{gistRepository: gistRepository, userRepository: userRepository}
 
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(3 * time.Hour)
 	go func() {
 		for range ticker.C {
 			gistService.RunGistCheck()

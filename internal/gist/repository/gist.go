@@ -3,9 +3,9 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 
 	"github.com/google/go-github/github"
+	"github.com/sylph4/pipedrive-challenge/storage/postgres"
 )
 
 type IGistRepository interface {
