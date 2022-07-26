@@ -126,7 +126,7 @@ func (h *GistHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validate := validator.New()
-	err = validate.Struct(&request)
+	err = validate.Struct(request)
 	if err != nil {
 		fmt.Println("Request validation error: ", err)
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
