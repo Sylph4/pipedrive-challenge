@@ -8,7 +8,6 @@ import (
 	"os/signal"
 	"time"
 
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	internalHttp "github.com/sylph4/pipedrive-challenge/internal/gist/http"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/repository"
 	"github.com/sylph4/pipedrive-challenge/internal/gist/service"
