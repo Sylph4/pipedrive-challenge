@@ -43,7 +43,7 @@ func (h *GistHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	validate := validator.New()
-	err = validate.Struct(&user)
+	err = validate.Struct(user)
 	if err != nil {
 		fmt.Println("Request validation error: ", err)
 		http.Error(w, http.StatusText(400), http.StatusBadRequest)
