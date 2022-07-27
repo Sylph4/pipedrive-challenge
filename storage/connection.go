@@ -7,9 +7,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -36,16 +33,6 @@ func Connect() (*sql.DB, error) {
 	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %v", err)
-	}
-
-	m, err := migrate.New(
-		"file://migrations",
-		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath[1:]+"/"+dbName+"?sslmode=disable")
-	if err != nil {
-		fmt.Println(err, "1")
-	}
-	if err := m.Up(); err != nil {
-		fmt.Println(err, "2")
 	}
 
 	configureConnectionPool(dbPool)
