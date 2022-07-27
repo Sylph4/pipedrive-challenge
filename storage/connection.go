@@ -31,7 +31,7 @@ func Connect() (*sql.DB, error) {
 		dbUser, dbPwd, dbName, unixSocketPath)
 
 	// dbPool is the pool of database connections.
-	dbPool, err := sql.Open("pgx", dbURI+" -path ./migrations")
+	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
@@ -40,7 +40,7 @@ func Connect() (*sql.DB, error) {
 
 	m, err := migrate.New(
 		"./migrations",
-		dbURI)
+		dbURI+" -path ./migrations")
 	if err != nil {
 		log.Fatal(err)
 	}
