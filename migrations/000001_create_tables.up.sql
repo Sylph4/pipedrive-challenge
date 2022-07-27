@@ -1,4 +1,4 @@
-CREATE TABLE public.Gists
+CREATE TABLE Gists
 (
     ID         varchar(32) PRIMARY KEY,
     user_name    varchar(100) NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE public.Gists
 	is_checked bool DEFAULT false
 );
 
-CREATE TABLE public.Users
+CREATE TABLE Users
 (
     user_name       varchar(100) NOT NULL,
     github_api_Key    varchar(40)  NOT NULL,
