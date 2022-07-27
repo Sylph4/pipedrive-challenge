@@ -3,11 +3,13 @@ package storage
 import (
 	"database/sql"
 	"fmt"
-	"github.com/golang-migrate/migrate/v4"
 	"log"
 	"os"
 	"time"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -39,8 +41,8 @@ func Connect() (*sql.DB, error) {
 	configureConnectionPool(dbPool)
 
 	m, err := migrate.New(
-		"./migrations",
-		dbURI+" -path ./migrations")
+		"file://migrations",
+		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
