@@ -72,30 +72,19 @@ func (s *GistService) RunGistCheck() {
 
 		for n := 0; n < len(responseGists); n++ {
 			if gist != nil && gist.CreatedAt.Before(*responseGists[n].CreatedAt) && !responseGists[n].CreatedAt.Equal(gist.CreatedAt) {
-				err = createActivity(ctx, responseGists[n], users[i], pipedriveClient)
+				err = s.createActivity(ctx, responseGists[n], users[i], pipedriveClient)
 				if err != nil {
 					fmt.Println("Could not create a gist: ", err)
 
 					break
 				}
 
-				err = s.gistRepository.InsertGist(responseGists[i])
-				if err != nil {
-
-					panic(err)
-				}
 			} else {
-				err = createActivity(ctx, responseGists[n], users[i], pipedriveClient)
+				err = s.createActivity(ctx, responseGists[n], users[i], pipedriveClient)
 				if err != nil {
 					fmt.Println("Could not create a gist: ", err)
 
 					break
-				}
-
-				err = s.gistRepository.InsertGist(responseGists[n])
-				if err != nil {
-
-					panic(err)
 				}
 			}
 		}
@@ -104,7 +93,7 @@ func (s *GistService) RunGistCheck() {
 	fmt.Println("Gists check ended at: ", time.Now().Format("2006-01-02T15:04:05"))
 }
 
-func createActivity(ctx context.Context, gist *github.Gist, user *postgres.User, pipedriveClient *pipedrive.Client) error {
+func (s *GistService) createActivity(ctx context.Context, gist *github.Gist, user *postgres.User, pipedriveClient *pipedrive.Client) error {
 	_, res, err := pipedriveClient.Activities.Create(ctx, &pipedrive.ActivitiesCreateOptions{
 		Subject:      gist.GetDescription(),
 		Done:         1,
@@ -123,6 +112,12 @@ func createActivity(ctx context.Context, gist *github.Gist, user *postgres.User,
 	}
 
 	fmt.Println("Activity created: ", res)
+
+	err = s.gistRepository.InsertGist(gist)
+	if err != nil {
+
+		panic(err)
+	}
 
 	return nil
 }
