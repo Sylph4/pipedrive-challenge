@@ -38,6 +38,8 @@ func Connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
+	fmt.Println("postgres://" + dbUser + ":" + dbPwd + "@" + unixSocketPath + "/" + dbName + "?sslmode=disable")
+
 	m, err := migrate.New(
 		"file://migrations",
 		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
