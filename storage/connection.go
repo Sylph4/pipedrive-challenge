@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	migrate "github.com/rubenv/sql-migrate"
 	"log"
 	"os"
 	"time"
@@ -36,6 +37,16 @@ func Connect() (*sql.DB, error) {
 	}
 
 	configureConnectionPool(dbPool)
+
+	migrations := &migrate.FileMigrationSource{
+		Dir: "migrations",
+	}
+
+	n, err := migrate.Exec(dbPool, "postgres", migrations, migrate.Up)
+	if err != nil {
+		fmt.Println("Could not apply migrations")
+	}
+	fmt.Printf("Applied %d migrations!\n", n)
 
 	return dbPool, nil
 }

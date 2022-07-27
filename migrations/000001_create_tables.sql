@@ -1,3 +1,5 @@
+-- +migrate Up
+-- SQL in section 'Up' is executed when this migration is applied
 CREATE TABLE Gists
 (
     ID         varchar(32) PRIMARY KEY,
@@ -13,3 +15,8 @@ CREATE TABLE Users
     pipedrive_api_Key varchar(40)  NOT NULL,
     pipedrive_user_id  INTEGER
 );
+
+-- +migrate Down
+-- SQL section 'Down' is executed when this migration is rolled back
+DROP TABLE IF EXISTS Gists;
+DROP TABLE IF EXISTS Users;
