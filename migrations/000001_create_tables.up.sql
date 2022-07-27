@@ -1,6 +1,4 @@
-CREATE SCHEMA IF NOT EXISTS public;
-
-CREATE TABLE Gists
+CREATE TABLE public.Gists
 (
     ID         varchar(32) PRIMARY KEY,
     user_name    varchar(100) NOT NULL,
@@ -8,7 +6,7 @@ CREATE TABLE Gists
 	is_checked bool DEFAULT false
 );
 
-CREATE TABLE Users
+CREATE TABLE public.Users
 (
     user_name       varchar(100) NOT NULL,
     github_api_Key    varchar(40)  NOT NULL,
