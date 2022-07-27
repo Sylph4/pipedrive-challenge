@@ -40,7 +40,7 @@ func Connect() (*sql.DB, error) {
 
 	m, err := migrate.New(
 		"file://migrations",
-		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
+		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath[1:]+"/"+dbName+"?sslmode=disable")
 	if err != nil {
 		fmt.Println(err, "1")
 	}
