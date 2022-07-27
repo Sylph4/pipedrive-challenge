@@ -27,6 +27,7 @@ func Connect() (*sql.DB, error) {
 		dbPwd          = mustGetenv("DB_PASS")              // e.g. 'my-db-password'
 		unixSocketPath = mustGetenv("INSTANCE_UNIX_SOCKET") // e.g. '/cloudsql/project:region:instance'
 		dbName         = mustGetenv("DB_NAME")              // e.g. 'my-database'
+		dbHost         = mustGetenv("DB_HOST")
 	)
 
 	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s",
@@ -42,7 +43,7 @@ func Connect() (*sql.DB, error) {
 
 	m, err := migrate.New(
 		"file://migrations",
-		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
+		"postgres://"+dbUser+":"+dbPwd+"@"+dbHost+"/"+dbName+"?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
 	}
