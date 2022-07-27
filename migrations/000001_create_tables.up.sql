@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS public;
+
 CREATE TABLE Gists
 (
     ID         varchar(32) PRIMARY KEY,
