@@ -38,11 +38,14 @@ func Connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	driver, err := postgres.WithInstance(dbPool, &postgres.Config{})
+	driver, err := postgres.WithInstance(dbPool, &postgres.Config{
+		DatabaseName: "postgres",
+		SchemaName:   "public",
+	})
 	m, err := migrate.NewWithDatabaseInstance(
 		"file:///migrations",
 		"postgres", driver)
-	m.Up() // or m.Step(2) if you want to explicitly set the number of migrations to run
+	m.Up()
 
 	configureConnectionPool(dbPool)
 
