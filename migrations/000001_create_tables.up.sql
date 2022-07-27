@@ -1,6 +1,3 @@
-DROP TABLE IF EXISTS Gists;
-DROP TABLE IF EXISTS Users;
-
 CREATE TABLE Gists
 (
     ID         varchar(32) PRIMARY KEY,

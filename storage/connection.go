@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	"github.com/golang-migrate/migrate/v4"
 	"log"
 	"os"
 	"time"
@@ -36,6 +37,16 @@ func Connect() (*sql.DB, error) {
 	}
 
 	configureConnectionPool(dbPool)
+
+	m, err := migrate.New(
+		"file://migrations",
+		dbURI)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := m.Up(); err != nil {
+		log.Fatal(err)
+	}
 
 	return dbPool, nil
 }
