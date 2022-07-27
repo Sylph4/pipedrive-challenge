@@ -42,10 +42,10 @@ func Connect() (*sql.DB, error) {
 		"file://migrations",
 		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err, "1")
 	}
 	if err := m.Up(); err != nil {
-		log.Fatal(err)
+		fmt.Println(err, "2")
 	}
 
 	configureConnectionPool(dbPool)
