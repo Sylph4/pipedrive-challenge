@@ -38,8 +38,6 @@ func Connect() (*sql.DB, error) {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	configureConnectionPool(dbPool)
-
 	m, err := migrate.New(
 		"file://migrations",
 		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
@@ -49,6 +47,8 @@ func Connect() (*sql.DB, error) {
 	if err := m.Up(); err != nil {
 		log.Fatal(err)
 	}
+
+	configureConnectionPool(dbPool)
 
 	return dbPool, nil
 }
