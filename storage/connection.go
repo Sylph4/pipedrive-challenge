@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/lib/pq"
+	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
 func Connect() (*sql.DB, error) {
@@ -33,19 +33,20 @@ func Connect() (*sql.DB, error) {
 		dbUser, dbPwd, dbName, unixSocketPath)
 
 	// dbPool is the pool of database connections.
-	dbPool, err := sql.Open("postgres", dbURI)
+	dbPool, err := sql.Open("pgx", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	driver, err := postgres.WithInstance(dbPool, &postgres.Config{
-		DatabaseName: "postgres",
-		SchemaName:   "public",
-	})
-	m, err := migrate.NewWithDatabaseInstance(
-		"file:///migrations",
-		"postgres", driver)
-	m.Up()
+	m, err := migrate.New(
+		"file://migrations",
+		"postgres://"+dbUser+":"+dbPwd+"@"+unixSocketPath+"/"+dbName+"?sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := m.Up(); err != nil {
+		log.Fatal(err)
+	}
 
 	configureConnectionPool(dbPool)
 
