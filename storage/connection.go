@@ -8,9 +8,9 @@ import (
 	"time"
 
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/lib/pq"
 )
 
 func Connect() (*sql.DB, error) {
@@ -27,29 +27,22 @@ func Connect() (*sql.DB, error) {
 		dbPwd          = mustGetenv("DB_PASS")              // e.g. 'my-db-password'
 		unixSocketPath = mustGetenv("INSTANCE_UNIX_SOCKET") // e.g. '/cloudsql/project:region:instance'
 		dbName         = mustGetenv("DB_NAME")              // e.g. 'my-database'
-		dbHost         = mustGetenv("DB_HOST")
 	)
 
 	dbURI := fmt.Sprintf("user=%s password=%s database=%s host=%s",
 		dbUser, dbPwd, dbName, unixSocketPath)
 
 	// dbPool is the pool of database connections.
-	dbPool, err := sql.Open("pgx", dbURI)
+	dbPool, err := sql.Open("postgres", dbURI)
 	if err != nil {
 		return nil, fmt.Errorf("sql.Open: %v", err)
 	}
 
-	fmt.Println("postgres://" + dbUser + ":" + dbPwd + "@" + unixSocketPath + "/" + dbName + "?sslmode=disable")
-
-	m, err := migrate.New(
-		"file://migrations",
-		"postgres://"+dbUser+":"+dbPwd+"@"+dbHost+"/"+dbName+"?sslmode=disable")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if err := m.Up(); err != nil {
-		log.Fatal(err)
-	}
+	driver, err := postgres.WithInstance(dbPool, &postgres.Config{})
+	m, err := migrate.NewWithDatabaseInstance(
+		"file:///migrations",
+		"postgres", driver)
+	m.Up() // or m.Step(2) if you want to explicitly set the number of migrations to run
 
 	configureConnectionPool(dbPool)
 
