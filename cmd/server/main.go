@@ -31,6 +31,7 @@ func main() {
 	mux.HandleFunc("/delete-user", gistHandler.DeleteUser)
 	mux.HandleFunc("/users", gistHandler.GetUsers)
 	mux.HandleFunc("/new-gists", gistHandler.GetNewUserGists)
+	mux.HandleFunc("/run-gists-check", gistHandler.RunGistsCheck)
 
 	server := &http.Server{
 		Addr:         ":8080",

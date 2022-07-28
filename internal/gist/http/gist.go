@@ -206,3 +206,15 @@ func (h *GistHandler) GetNewUserGists(w http.ResponseWriter, r *http.Request) {
 	//nolint
 	w.Write(response)
 }
+
+func (h *GistHandler) RunGistsCheck(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, http.StatusText(405), http.StatusMethodNotAllowed)
+
+		return
+	}
+
+	h.gistService.RunGistCheck()
+
+	http.StatusText(200)
+}
