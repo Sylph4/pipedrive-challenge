@@ -44,7 +44,7 @@ func (s *GistService) RunGistCheck() {
 	}
 
 	if len(users) == 0 {
-		fmt.Println("check start at: No users found")
+		fmt.Println("No users found for check")
 	}
 
 	for i := range users {
