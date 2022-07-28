@@ -216,5 +216,6 @@ func (h *GistHandler) RunGistsCheck(w http.ResponseWriter, r *http.Request) {
 
 	h.gistService.RunGistCheck()
 
-	http.StatusText(200)
+	w.Write([]byte("Check started"))
+	w.WriteHeader(200)
 }
